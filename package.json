@@ -1,0 +1,19 @@
+{
+  "name": "playwright-mark",
+  "version": "1.0.0",
+  "description": "Um projeto de gerenciador de tarefas (Task Manager) composto por uma API backend e uma interface web frontend, com testes automatizados usando Playwright.",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@types/node": "^26.2.0",
+    "dotenv": "^17.4.2"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^8.4.1",
+    "dotenv-expand": "^1000.0.0"
+  }
+}
