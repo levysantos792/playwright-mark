@@ -22,12 +22,12 @@ jobs:
 
     steps:
       # Faz o checkout do código fonte do repositório
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       # Configura a versão do Node.js utilizada na execução
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       # Instala as dependências do projeto
       - name: Install Dependencies
