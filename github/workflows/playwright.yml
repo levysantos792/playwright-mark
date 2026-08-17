@@ -27,7 +27,7 @@ jobs:
       # Configura a versão do Node.js utilizada na execução
       - uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 18
 
       # Instala as dependências do projeto
       - name: Install Dependencies
