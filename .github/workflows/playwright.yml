@@ -43,7 +43,7 @@ jobs:
 
       # Publica o relatório HTML como artefato
       # Mesmo que os testes falhem
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report
