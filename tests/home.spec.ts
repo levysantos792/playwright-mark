@@ -1,6 +1,8 @@
 import { test } from '@playwright/test';
-import { navegateToHomePage } from '../page/homePage';
+import { Taskpage } from './support/page/taskPage/index';
+
 
 test('homepage has Playwright', async ({ page }) => {
-    await navegateToHomePage(page)
+    const taskpage: Taskpage = new Taskpage(page)
+    await taskpage.navegateToHomePage(page)
 })

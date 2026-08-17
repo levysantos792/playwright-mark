@@ -21,10 +21,9 @@ test.describe('Tarefas', () => {
         await taskAPI.deleteTaskByHelper(newTaskName)
         await taskPage.crearNewTask(newTaskName)
         await taskPage.taskItem(newTaskName)
-
     });
 
-    test.only('Não deve criar tarefa duplicada', async () => {
+    test('Não deve criar tarefa duplicada', async () => {
         await taskAPI.deleteTaskByHelper(newTaskName)
         await taskAPI.postTask(newTaskName)
         await taskPage.crearNewTask(newTaskName)
@@ -41,7 +40,6 @@ test.describe('Tarefas', () => {
         await taskPage.crearNewTask(newTaskName)
         await taskPage.taskConcluida(newTaskName)
         await taskPage.shouldBeDone(newTaskName)
-
     })
 
     test('Excluir task não concluida', async () => {
@@ -56,7 +54,6 @@ test.describe('Tarefas', () => {
         await taskPage.taskConcluida(newTaskName)
         await taskPage.shouldBeDone(newTaskName)
         await taskPage.removeTask(newTaskName)
-
     })
 
 })
