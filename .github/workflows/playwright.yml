@@ -1,9 +1,5 @@
-# Nome do workflow que aparecerá na aba Actions do GitHub
 name: Playwright Tests
 
-# Define quando o workflow será executado
-# Neste caso, quando houver push ou pull request
-# para as branches main ou master
 on:
   push:
     branches: [main, master]
@@ -11,38 +7,77 @@ on:
   pull_request:
     branches: [main, master]
 
-# Jobs (tarefas) que serão executadas
 jobs:
   test:
-    # Tempo máximo de execução do job
     timeout-minutes: 60
 
-    # Máquina virtual onde os testes serão executados
     runs-on: ubuntu-latest
 
     steps:
-      # Faz o checkout do código fonte do repositório
+      # Baixa o código do repositório
       - uses: actions/checkout@v4
 
-      # Configura a versão do Node.js utilizada na execução
+      # Configura o Node.js
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
-      # Instala as dependências do projeto
-      - name: Install Dependencies
+      # Instala dependências da raiz
+      - name: Install Root Dependencies
         run: npm install
 
-      # Instala os navegadores e dependências do Playwright
+      # Instala dependências da API
+      - name: Install API Dependencies
+        run: |
+          cd apps/api
+          npm install
+
+      # Cria o banco SQLite
+      - name: Init Database
+        run: |
+          cd apps/api
+          npm run db:init
+
+      # Instala dependências da Web
+      - name: Install Web Dependencies
+        run: |
+          cd apps/web
+          npm install
+
+      # Cria o .env para os testes
+      - name: Create .env
+        run: |
+          echo "BASE_URL=${{ secrets.BASE_URL }}" > .env
+          echo "BASE_API=${{ secrets.BASE_API }}" >> .env
+
+      # Inicia a API
+      - name: Start API
+        run: |
+          cd apps/api
+          npm start &
+          
+      # Inicia a aplicação Web
+      - name: Start Web
+        run: |
+          cd apps/web
+          npm start &
+
+      # Aguarda os serviços iniciarem
+      - name: Wait for applications
+        run: sleep 15
+
+      # Instala navegadores do Playwright
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
-      # Executa os testes automatizados
+      # Executa os testes
       - name: Run Playwright Tests
+        env:
+          BASE_URL: ${{ secrets.BASE_URL }}
+          BASE_API: ${{ secrets.BASE_API }}
         run: npx playwright test
 
-      # Publica o relatório HTML como artefato
-      # Mesmo que os testes falhem
+      # Publica o relatório
       - uses: actions/upload-artifact@v4
         if: always()
         with:
