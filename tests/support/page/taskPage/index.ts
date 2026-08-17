@@ -13,6 +13,7 @@ export class Taskpage {
     ) { }
 
     async navegateToHomePage(page: Page) {
+        console.log('BASE_URL:', process.env.BASE_URL)
         await page.goto(`/`)
         await expect(page).toHaveTitle(TaskPageElements.title)
     }
