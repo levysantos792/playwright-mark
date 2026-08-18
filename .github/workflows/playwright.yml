@@ -10,7 +10,6 @@ on:
 jobs:
   test:
     timeout-minutes: 60
-
     runs-on: ubuntu-latest
 
     steps:
@@ -32,7 +31,7 @@ jobs:
           cd apps/api
           npm install
 
-      # Cria o banco SQLite
+      # Inicializa banco SQLite
       - name: Init Database
         run: |
           cd apps/api
@@ -44,40 +43,70 @@ jobs:
           cd apps/web
           npm install
 
-      # Cria o .env para os testes
+      # Cria arquivo .env
       - name: Create .env
         run: |
           echo "BASE_URL=${{ secrets.BASE_URL }}" > .env
           echo "BASE_API=${{ secrets.BASE_API }}" >> .env
 
-      # Inicia a API
+      # Sobe API
       - name: Start API
         run: |
           cd apps/api
-          npm start &
-          
-      # Inicia a aplicação Web
+          npm start > api.log 2>&1 &
+
+      # Sobe Web
       - name: Start Web
         run: |
           cd apps/web
-          npm start &
+          npm start > web.log 2>&1 &
 
-      # Aguarda os serviços iniciarem
-      - name: Wait for applications
-        run: sleep 15
+      # Verifica se os secrets chegaram
+      - name: Check Environment Variables
+        run: |
+          echo "BASE_URL definida? $([ -n "$BASE_URL" ] && echo SIM || echo NAO)"
+          echo "BASE_API definida? $([ -n "$BASE_API" ] && echo SIM || echo NAO)"
+        env:
+          BASE_URL: ${{ secrets.BASE_URL }}
+          BASE_API: ${{ secrets.BASE_API }}
+
+      # Testa acesso à URL usada pelo Playwright
+      - name: Check BASE_URL
+        run: |
+          echo "Testando acesso à aplicação..."
+          curl -I -L "$BASE_URL"
+        env:
+          BASE_URL: ${{ secrets.BASE_URL }}
+
+      # Aguarda a aplicação responder
+      - name: Wait for Application
+        run: |
+          npx wait-on "$BASE_URL"
+        env:
+          BASE_URL: ${{ secrets.BASE_URL }}
 
       # Instala navegadores do Playwright
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
-      # Executa os testes
+      # Executa testes
       - name: Run Playwright Tests
         env:
           BASE_URL: ${{ secrets.BASE_URL }}
           BASE_API: ${{ secrets.BASE_API }}
         run: npx playwright test
 
-      # Publica o relatório
+      # Em caso de falha, exibe logs da aplicação
+      - name: Show Logs
+        if: failure()
+        run: |
+          echo "===== API LOG ====="
+          cat apps/api/api.log || true
+
+          echo "===== WEB LOG ====="
+          cat apps/web/web.log || true
+
+      # Publica relatório do Playwright
       - uses: actions/upload-artifact@v4
         if: always()
         with:
