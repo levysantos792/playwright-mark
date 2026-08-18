@@ -26,18 +26,6 @@ jobs:
       - name: Install Root Dependencies
         run: npm install
 
-      # Instala dependências da API
-      - name: Install API Dependencies
-        run: |
-          cd apps/api
-          npm install
-
-      # Instala dependências da Web
-      - name: Install Web Dependencies
-        run: |
-          cd apps/web
-          npm install
-
       # Cria o .env para os testes
       - name: Create .env
         run: |
